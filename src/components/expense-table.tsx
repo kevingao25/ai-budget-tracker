@@ -1,17 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Pencil, Trash2 } from "lucide-react";
 import type { Expense, Category } from "@/lib/types";
 import { CATEGORY_LABELS, CATEGORY_COLORS } from "@/lib/types";
 
@@ -21,9 +13,18 @@ interface ExpenseTableProps {
   onDelete: (id: string) => void;
 }
 
-const FILTERS: (Category | "all")[] = ["all", "subscriptions", "api", "learning"];
+const FILTERS: (Category | "all")[] = [
+  "all",
+  "subscriptions",
+  "api",
+  "learning",
+];
 
-export function ExpenseTable({ expenses, onEdit, onDelete }: ExpenseTableProps) {
+export function ExpenseTable({
+  expenses,
+  onEdit,
+  onDelete,
+}: ExpenseTableProps) {
   const [filter, setFilter] = useState<Category | "all">("all");
 
   const filtered =
@@ -36,51 +37,56 @@ export function ExpenseTable({ expenses, onEdit, onDelete }: ExpenseTableProps) 
   );
 
   return (
-    <Card>
-      <CardContent className="p-6">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="font-semibold">All Expenses</h3>
-          <div className="flex gap-1">
-            {FILTERS.map((f) => (
-              <button
-                key={f}
-                onClick={() => setFilter(f)}
-                className={`px-3 py-1 rounded-full text-xs cursor-pointer transition-colors ${
-                  filter === f
-                    ? "bg-muted text-foreground"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {f === "all" ? "All" : CATEGORY_LABELS[f]}
-              </button>
-            ))}
-          </div>
+    <div>
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-widest">
+          All Expenses
+        </h3>
+        <div className="flex gap-1">
+          {FILTERS.map((f) => (
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              className={`px-3 py-1 rounded-full text-xs cursor-pointer transition-colors ${
+                filter === f
+                  ? "bg-secondary text-foreground font-medium"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {f === "all" ? "All" : CATEGORY_LABELS[f]}
+            </button>
+          ))}
         </div>
+      </div>
 
-        {sorted.length === 0 ? (
-          <p className="text-sm text-muted-foreground py-8 text-center">
-            {filter === "all"
-              ? "No expenses yet. Click \"+ Log Expense\" to get started."
-              : `No ${CATEGORY_LABELS[filter].toLowerCase()} expenses yet.`}
-          </p>
-        ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead className="text-right">Amount</TableHead>
-                <TableHead className="w-[100px]" />
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {sorted.map((expense) => (
-                <TableRow key={expense.id}>
-                  <TableCell className="font-medium">{expense.name}</TableCell>
-                  <TableCell>
+      {sorted.length === 0 ? (
+        <p className="text-sm text-muted-foreground py-12 text-center">
+          {filter === "all"
+            ? 'No expenses yet. Click "+ Log Expense" to get started.'
+            : `No ${CATEGORY_LABELS[filter].toLowerCase()} expenses yet.`}
+        </p>
+      ) : (
+        <div className="divide-y divide-border">
+          {sorted.map((expense) => (
+            <div
+              key={expense.id}
+              className="flex items-center justify-between py-3 group"
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <div
+                  className="w-2 h-2 rounded-full shrink-0"
+                  style={{
+                    backgroundColor: CATEGORY_COLORS[expense.category],
+                  }}
+                />
+                <div className="min-w-0">
+                  <p className="text-sm font-medium truncate">
+                    {expense.name}
+                  </p>
+                  <div className="flex items-center gap-2 mt-0.5">
                     <Badge
                       variant="outline"
+                      className="text-[11px] h-4 px-1.5"
                       style={{
                         borderColor: CATEGORY_COLORS[expense.category],
                         color: CATEGORY_COLORS[expense.category],
@@ -88,41 +94,43 @@ export function ExpenseTable({ expenses, onEdit, onDelete }: ExpenseTableProps) 
                     >
                       {CATEGORY_LABELS[expense.category]}
                     </Badge>
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {new Date(expense.date).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                    })}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    ${expense.amount.toFixed(2)}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex gap-1 justify-end">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => onEdit(expense)}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-destructive"
-                        onClick={() => onDelete(expense.id)}
-                      >
-                        Delete
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        )}
-      </CardContent>
-    </Card>
+                    <span className="text-xs text-muted-foreground">
+                      {new Date(expense.date).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium font-number">
+                  ${expense.amount.toFixed(2)}
+                </span>
+                <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 w-7 p-0 cursor-pointer"
+                    onClick={() => onEdit(expense)}
+                  >
+                    <Pencil size={14} />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 w-7 p-0 text-destructive cursor-pointer"
+                    onClick={() => onDelete(expense.id)}
+                  >
+                    <Trash2 size={14} />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }

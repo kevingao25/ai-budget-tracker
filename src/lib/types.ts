@@ -21,7 +21,7 @@ export const CATEGORY_LABELS: Record<Category, string> = {
 };
 
 export const CATEGORY_COLORS: Record<Category, string> = {
-  subscriptions: "#3b82f6",
-  api: "#34d399",
-  learning: "#fbbf24",
+  subscriptions: "#5b8fd9",
+  api: "#2a9d8f",
+  learning: "#e9c46a",
 };
