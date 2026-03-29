@@ -95,7 +95,7 @@ export function ExpenseTable({
                       {CATEGORY_LABELS[expense.category]}
                     </Badge>
                     <span className="text-xs text-muted-foreground">
-                      {new Date(expense.date).toLocaleDateString("en-US", {
+                      {new Date(`${expense.date}T00:00:00`).toLocaleDateString("en-US", {
                         month: "short",
                         day: "numeric",
                       })}

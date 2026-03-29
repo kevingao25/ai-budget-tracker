@@ -42,7 +42,7 @@ export function ExpenseForm({
     editingExpense?.category ?? "subscriptions"
   );
   const [date, setDate] = useState(
-    editingExpense?.date ?? new Date().toISOString().split("T")[0]
+    editingExpense?.date ?? (() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; })()
   );
   const [notes, setNotes] = useState(editingExpense?.notes ?? "");
 
