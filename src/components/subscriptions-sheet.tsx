@@ -1,13 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { Pencil, Trash2, Plus } from "lucide-react";
+import { Pencil, Trash2, Plus, ArrowLeft } from "lucide-react";
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -65,6 +66,13 @@ function subscriptionToForm(s: Subscription): FormState {
   };
 }
 
+function formatRenewalDate(dateStr: string): string {
+  return new Date(`${dateStr}T00:00:00`).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
+}
+
 export function SubscriptionsSheet({
   open,
   onOpenChange,
@@ -93,6 +101,14 @@ export function SubscriptionsSheet({
   function cancelForm() {
     setShowForm(false);
     setEditingId(null);
+  }
+
+  function handleOpenChange(next: boolean) {
+    if (!next) {
+      setShowForm(false);
+      setEditingId(null);
+    }
+    onOpenChange(next);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -130,162 +146,204 @@ export function SubscriptionsSheet({
     setForm((prev) => ({ ...prev, [key]: value }));
   }
 
-  return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="flex flex-col gap-0 overflow-y-auto">
-        <SheetHeader className="pb-4">
-          <SheetTitle>Subscriptions</SheetTitle>
-        </SheetHeader>
+  const monthlyTotal = subscriptions
+    .filter((s) => s.active)
+    .reduce((sum, s) => sum + (s.billingCycle === "yearly" ? s.amount / 12 : s.amount), 0);
 
-        {/* List */}
+  return (
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent>
+        {/* List view */}
         {!showForm && (
-          <div className="flex flex-col gap-4">
+          <>
+            <DialogHeader>
+              <DialogTitle>Subscriptions</DialogTitle>
+            </DialogHeader>
+
+            {subscriptions.length > 0 && (
+              <div className="flex items-baseline justify-between px-1">
+                <p className="text-xs text-muted-foreground uppercase tracking-widest">
+                  {subscriptions.filter((s) => s.active).length} active
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  <span className="font-number font-medium text-foreground">${monthlyTotal.toFixed(2)}</span>/mo
+                </p>
+              </div>
+            )}
+
             {subscriptions.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No subscriptions yet.</p>
+              <div className="py-8 text-center">
+                <p className="text-sm text-muted-foreground">
+                  No subscriptions yet.
+                </p>
+              </div>
             ) : (
-              <ul className="space-y-3">
+              <div className="divide-y divide-border">
                 {subscriptions.map((s) => (
-                  <li
+                  <div
                     key={s.id}
-                    className="flex items-start justify-between gap-3 rounded-lg border p-3"
+                    className="flex items-center justify-between py-3 group"
                   >
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-medium text-sm truncate">{s.name}</span>
-                        <Badge variant="secondary" className="text-xs shrink-0">
-                          {s.billingCycle}
-                        </Badge>
-                        {!s.active && (
-                          <Badge variant="outline" className="text-xs shrink-0 text-muted-foreground">
-                            paused
-                          </Badge>
-                        )}
-                      </div>
-                      <p className="text-sm text-muted-foreground mt-0.5">
-                        ${s.amount.toFixed(2)} · renews {s.nextRenewalDate}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-1 shrink-0">
+                    <div className="flex items-center gap-3 min-w-0">
                       <Switch
                         checked={s.active}
                         onCheckedChange={(checked) => {
                           void onUpdate(s.id, { active: checked });
                         }}
-                        aria-label={s.active ? "Pause subscription" : "Resume subscription"}
+                        aria-label={s.active ? "Pause" : "Resume"}
                       />
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="h-8 w-8"
-                        onClick={() => openEditForm(s)}
-                        aria-label="Edit"
-                      >
-                        <Pencil className="h-3.5 w-3.5" />
-                      </Button>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="h-8 w-8 text-destructive hover:text-destructive"
-                        onClick={() => { void onDelete(s.id); }}
-                        aria-label="Delete"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </Button>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className={`text-sm font-medium truncate ${!s.active ? "text-muted-foreground line-through" : ""}`}>
+                            {s.name}
+                          </span>
+                          <Badge
+                            variant="outline"
+                            className="text-[11px] h-4 px-1.5 shrink-0"
+                          >
+                            {s.billingCycle}
+                          </Badge>
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          Renews {formatRenewalDate(s.nextRenewalDate)}
+                        </p>
+                      </div>
                     </div>
-                  </li>
+
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium font-number">
+                        ${s.amount.toFixed(2)}
+                      </span>
+                      <div className="flex gap-0.5 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 w-7 p-0 cursor-pointer"
+                          onClick={() => openEditForm(s)}
+                          aria-label="Edit"
+                        >
+                          <Pencil size={14} />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 w-7 p-0 text-destructive cursor-pointer"
+                          onClick={() => { void onDelete(s.id); }}
+                          aria-label="Delete"
+                        >
+                          <Trash2 size={14} />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
                 ))}
-              </ul>
+              </div>
             )}
-            <Button onClick={openAddForm} variant="outline" className="w-full gap-2">
-              <Plus className="h-4 w-4" />
-              Add Subscription
-            </Button>
-          </div>
+
+            <DialogFooter>
+              <Button onClick={openAddForm} className="w-full gap-2 cursor-pointer">
+                <Plus className="h-4 w-4" />
+                Add Subscription
+              </Button>
+            </DialogFooter>
+          </>
         )}
 
-        {/* Form */}
+        {/* Form view */}
         {showForm && (
-          <form
-            onSubmit={(e) => { void handleSubmit(e); }}
-            className="space-y-4"
-          >
-            <p className="text-sm font-medium">
-              {editingId ? "Edit subscription" : "New subscription"}
-            </p>
+          <>
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={cancelForm}
+                  className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                  aria-label="Back"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                </button>
+                {editingId ? "Edit Subscription" : "New Subscription"}
+              </DialogTitle>
+            </DialogHeader>
 
-            <div className="space-y-2">
-              <Label htmlFor="sub-name">Name</Label>
-              <Input
-                id="sub-name"
-                placeholder="e.g., Claude Pro"
-                value={form.name}
-                onChange={(e) => setField("name", e.target.value)}
-                required
-              />
-            </div>
+            <form
+              onSubmit={(e) => { void handleSubmit(e); }}
+              className="space-y-4"
+            >
+              <div className="space-y-2">
+                <Label htmlFor="sub-name">Name</Label>
+                <Input
+                  id="sub-name"
+                  placeholder="e.g., Claude Pro"
+                  value={form.name}
+                  onChange={(e) => setField("name", e.target.value)}
+                  required
+                />
+              </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="sub-amount">Amount ($)</Label>
-              <Input
-                id="sub-amount"
-                type="number"
-                step="0.01"
-                min="0"
-                placeholder="0.00"
-                value={form.amount}
-                onChange={(e) => setField("amount", e.target.value)}
-                required
-              />
-            </div>
+              <div className="space-y-2">
+                <Label htmlFor="sub-amount">Amount ($)</Label>
+                <Input
+                  id="sub-amount"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  placeholder="0.00"
+                  value={form.amount}
+                  onChange={(e) => setField("amount", e.target.value)}
+                  required
+                />
+              </div>
 
-            <div className="space-y-2">
-              <Label>Billing cycle</Label>
-              <Select
-                value={form.billingCycle}
-                onValueChange={(v) => setField("billingCycle", v as BillingCycle)}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="monthly">Monthly</SelectItem>
-                  <SelectItem value="yearly">Yearly</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+              <div className="space-y-2">
+                <Label>Billing cycle</Label>
+                <Select
+                  value={form.billingCycle}
+                  onValueChange={(v) => setField("billingCycle", v as BillingCycle)}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="monthly">Monthly</SelectItem>
+                    <SelectItem value="yearly">Yearly</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="sub-renewal">Next renewal date</Label>
-              <Input
-                id="sub-renewal"
-                type="date"
-                value={form.nextRenewalDate}
-                onChange={(e) => setField("nextRenewalDate", e.target.value)}
-                required
-              />
-            </div>
+              <div className="space-y-2">
+                <Label htmlFor="sub-renewal">Next renewal date</Label>
+                <Input
+                  id="sub-renewal"
+                  type="date"
+                  value={form.nextRenewalDate}
+                  onChange={(e) => setField("nextRenewalDate", e.target.value)}
+                  required
+                />
+              </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="sub-notes">Notes (optional)</Label>
-              <Input
-                id="sub-notes"
-                placeholder="Any details"
-                value={form.notes}
-                onChange={(e) => setField("notes", e.target.value)}
-              />
-            </div>
+              <div className="space-y-2">
+                <Label htmlFor="sub-notes">Notes (optional)</Label>
+                <Input
+                  id="sub-notes"
+                  placeholder="Any additional details"
+                  value={form.notes}
+                  onChange={(e) => setField("notes", e.target.value)}
+                />
+              </div>
 
-            <div className="flex gap-2 pt-1">
-              <Button type="button" variant="outline" onClick={cancelForm} className="flex-1">
-                Cancel
-              </Button>
-              <Button type="submit" disabled={saving} className="flex-1">
-                {saving ? "Saving…" : editingId ? "Save" : "Add"}
-              </Button>
-            </div>
-          </form>
+              <DialogFooter>
+                <Button type="button" variant="outline" onClick={cancelForm}>
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={saving}>
+                  {saving ? "Saving…" : editingId ? "Save Changes" : "Add Subscription"}
+                </Button>
+              </DialogFooter>
+            </form>
+          </>
         )}
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   );
 }
