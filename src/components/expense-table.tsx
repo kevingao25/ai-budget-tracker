@@ -38,11 +38,11 @@ export function ExpenseTable({
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex flex-wrap justify-between items-center gap-2 mb-4">
         <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-widest">
           All Expenses
         </h3>
-        <div className="flex gap-1">
+        <div className="flex flex-wrap gap-1">
           {FILTERS.map((f) => (
             <button
               key={f}
@@ -108,7 +108,7 @@ export function ExpenseTable({
                 <span className="text-sm font-medium font-number">
                   ${expense.amount.toFixed(2)}
                 </span>
-                <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex gap-0.5 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                   <Button
                     variant="ghost"
                     size="sm"

@@ -55,7 +55,7 @@ export function CategoryBreakdown({
       </div>
 
       {/* Legend */}
-      <div className="flex gap-6">
+      <div className="flex flex-wrap gap-x-6 gap-y-2">
         {CATEGORIES.map((cat) => {
           const amount = spentByCategory[cat] || 0;
           if (amount === 0) return null;

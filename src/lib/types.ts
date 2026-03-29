@@ -25,3 +25,16 @@ export const CATEGORY_COLORS: Record<Category, string> = {
   api: "#2a9d8f",
   learning: "#e9c46a",
 };
+
+export type BillingCycle = "monthly" | "yearly";
+
+export interface Subscription {
+  id: string;
+  name: string;
+  amount: number;
+  billingCycle: BillingCycle;
+  nextRenewalDate: string; // ISO date string (YYYY-MM-DD)
+  active: boolean;
+  notes?: string;
+  createdAt: string;
+}

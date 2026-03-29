@@ -7,10 +7,13 @@ import { BudgetOverview } from "@/components/budget-overview";
 import { CategoryBreakdown } from "@/components/category-breakdown";
 import { ExpenseTable } from "@/components/expense-table";
 import { ExpenseForm } from "@/components/expense-form";
+import { RenewalBanner } from "@/components/renewal-banner";
+import { SubscriptionsSheet } from "@/components/subscriptions-sheet";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useExpenses } from "@/hooks/use-expenses";
 import { useBudget } from "@/hooks/use-budget";
-import type { BudgetConfig, Expense } from "@/lib/types";
+import { useSubscriptions } from "@/hooks/use-subscriptions";
+import type { BudgetConfig, Expense, Subscription } from "@/lib/types";
 
 const stagger = {
   hidden: {},
@@ -29,11 +32,13 @@ const fadeUp = {
 interface DashboardClientProps {
   initialExpenses: Expense[];
   initialBudget: BudgetConfig;
+  initialSubscriptions: Subscription[];
 }
 
 export function DashboardClient({
   initialExpenses,
   initialBudget,
+  initialSubscriptions,
 }: DashboardClientProps) {
   const {
     expenses,
@@ -44,8 +49,11 @@ export function DashboardClient({
     spentByCategory,
   } = useExpenses(initialExpenses);
   const { budget, updateBudget } = useBudget(initialBudget);
+  const { subscriptions, addSubscription, updateSubscription, deleteSubscription } =
+    useSubscriptions(initialSubscriptions);
   const [formOpen, setFormOpen] = useState(false);
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
+  const [subsOpen, setSubsOpen] = useState(false);
 
   async function handleSubmit(expense: Omit<Expense, "id" | "createdAt">) {
     if (editingExpense) {
@@ -68,12 +76,12 @@ export function DashboardClient({
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-2xl mx-auto px-5 py-10">
+      <div className="max-w-2xl mx-auto px-4 sm:px-5 py-6 sm:py-10">
         <motion.div
           variants={stagger}
           initial="hidden"
           animate="visible"
-          className="space-y-10"
+          className="space-y-8 sm:space-y-10"
         >
           <motion.header variants={fadeUp} className="flex justify-between items-start">
             <div>
@@ -86,6 +94,14 @@ export function DashboardClient({
               <ThemeToggle />
               <Button
                 size="sm"
+                variant="outline"
+                onClick={() => setSubsOpen(true)}
+                className="cursor-pointer"
+              >
+                Subscriptions
+              </Button>
+              <Button
+                size="sm"
                 onClick={() => setFormOpen(true)}
                 className="cursor-pointer"
               >
@@ -93,6 +109,10 @@ export function DashboardClient({
               </Button>
             </div>
           </motion.header>
+
+          <motion.div variants={fadeUp}>
+            <RenewalBanner subscriptions={subscriptions} />
+          </motion.div>
 
           <motion.div variants={fadeUp}>
             <BudgetOverview
@@ -125,6 +145,15 @@ export function DashboardClient({
         onOpenChange={handleFormOpenChange}
         onSubmit={handleSubmit}
         editingExpense={editingExpense}
+      />
+
+      <SubscriptionsSheet
+        open={subsOpen}
+        onOpenChange={setSubsOpen}
+        subscriptions={subscriptions}
+        onAdd={addSubscription}
+        onUpdate={updateSubscription}
+        onDelete={deleteSubscription}
       />
     </div>
   );

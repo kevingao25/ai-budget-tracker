@@ -21,3 +21,14 @@ model BudgetConfig {
   totalBudget Float    @default(3000)
   updatedAt   DateTime @updatedAt
 }
+
+model Subscription {
+  id              String   @id @default(cuid())
+  name            String
+  amount          Float
+  billingCycle    String   @default("monthly")
+  nextRenewalDate DateTime
+  active          Boolean  @default(true)
+  notes           String?
+  createdAt       DateTime @default(now())
+}
