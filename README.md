@@ -15,11 +15,11 @@ I set aside $3,000 to invest in learning AI — subscriptions, API credits, cour
 - Full expense log with filter, edit, and delete
 - Configurable budget amount
 - Light/dark theme toggle
-- localStorage persistence (database-ready architecture)
+- Postgres persistence (Prisma + Neon)
 
 ## Stack
 
-Next.js 16 &middot; TypeScript &middot; Tailwind CSS &middot; shadcn/ui &middot; Recharts &middot; Framer Motion
+Next.js 16 &middot; TypeScript &middot; Tailwind CSS &middot; shadcn/ui &middot; Recharts &middot; Framer Motion &middot; Prisma &middot; Postgres
 
 ## Getting Started
 
