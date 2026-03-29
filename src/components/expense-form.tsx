@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -24,7 +24,7 @@ import { CATEGORY_LABELS } from "@/lib/types";
 interface ExpenseFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (expense: Omit<Expense, "id" | "createdAt">) => void;
+  onSubmit: (expense: Omit<Expense, "id" | "createdAt">) => Promise<void>;
   editingExpense?: Expense | null;
 }
 
@@ -36,34 +36,22 @@ export function ExpenseForm({
   onSubmit,
   editingExpense,
 }: ExpenseFormProps) {
-  const [name, setName] = useState("");
-  const [amount, setAmount] = useState("");
-  const [category, setCategory] = useState<Category>("subscriptions");
-  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
-  const [notes, setNotes] = useState("");
+  const [name, setName] = useState(editingExpense?.name ?? "");
+  const [amount, setAmount] = useState(editingExpense?.amount.toString() ?? "");
+  const [category, setCategory] = useState<Category>(
+    editingExpense?.category ?? "subscriptions"
+  );
+  const [date, setDate] = useState(
+    editingExpense?.date ?? new Date().toISOString().split("T")[0]
+  );
+  const [notes, setNotes] = useState(editingExpense?.notes ?? "");
 
-  useEffect(() => {
-    if (editingExpense) {
-      setName(editingExpense.name);
-      setAmount(editingExpense.amount.toString());
-      setCategory(editingExpense.category);
-      setDate(editingExpense.date);
-      setNotes(editingExpense.notes || "");
-    } else {
-      setName("");
-      setAmount("");
-      setCategory("subscriptions");
-      setDate(new Date().toISOString().split("T")[0]);
-      setNotes("");
-    }
-  }, [editingExpense, open]);
-
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const parsedAmount = parseFloat(amount);
     if (!name || isNaN(parsedAmount) || parsedAmount <= 0) return;
 
-    onSubmit({
+    await onSubmit({
       name,
       amount: parsedAmount,
       category,
@@ -81,7 +69,12 @@ export function ExpenseForm({
             {editingExpense ? "Edit Expense" : "Log Expense"}
           </DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form
+          onSubmit={(e) => {
+            void handleSubmit(e);
+          }}
+          className="space-y-4"
+        >
           <div className="space-y-2">
             <Label htmlFor="name">Name</Label>
             <Input

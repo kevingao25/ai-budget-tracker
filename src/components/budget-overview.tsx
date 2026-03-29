@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 interface BudgetOverviewProps {
   totalBudget: number;
   totalSpent: number;
-  onUpdateBudget: (amount: number) => void;
+  onUpdateBudget: (amount: number) => Promise<void>;
 }
 
 export function BudgetOverview({
@@ -21,10 +21,10 @@ export function BudgetOverview({
   const remaining = totalBudget - totalSpent;
   const percentUsed = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
 
-  function handleSave() {
+  async function handleSave() {
     const val = parseFloat(editValue);
     if (!isNaN(val) && val > 0) {
-      onUpdateBudget(val);
+      await onUpdateBudget(val);
     }
     setEditing(false);
   }
@@ -64,11 +64,16 @@ export function BudgetOverview({
               type="number"
               value={editValue}
               onChange={(e) => setEditValue(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSave()}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  void handleSave();
+                }
+              }}
               className="w-24 h-7 text-sm"
               autoFocus
             />
-            <Button size="sm" variant="ghost" onClick={handleSave}>
+            <Button size="sm" variant="ghost" onClick={() => void handleSave()}>
               Save
             </Button>
             <Button

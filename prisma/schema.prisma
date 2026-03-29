@@ -1,0 +1,23 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Expense {
+  id        String   @id @default(cuid())
+  name      String
+  amount    Float
+  category  String
+  date      DateTime
+  notes     String?
+  createdAt DateTime @default(now())
+}
+
+model BudgetConfig {
+  id          String   @id
+  totalBudget Float    @default(3000)
+  updatedAt   DateTime @updatedAt
+}

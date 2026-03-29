@@ -10,7 +10,7 @@ import { CATEGORY_LABELS, CATEGORY_COLORS } from "@/lib/types";
 interface ExpenseTableProps {
   expenses: Expense[];
   onEdit: (expense: Expense) => void;
-  onDelete: (id: string) => void;
+  onDelete: (id: string) => Promise<boolean>;
 }
 
 const FILTERS: (Category | "all")[] = [
@@ -121,7 +121,7 @@ export function ExpenseTable({
                     variant="ghost"
                     size="sm"
                     className="h-7 w-7 p-0 text-destructive cursor-pointer"
-                    onClick={() => onDelete(expense.id)}
+                    onClick={() => void onDelete(expense.id)}
                   >
                     <Trash2 size={14} />
                   </Button>

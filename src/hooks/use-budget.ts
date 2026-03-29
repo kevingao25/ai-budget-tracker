@@ -1,20 +1,20 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import type { BudgetConfig } from "@/lib/types";
-import * as storage from "@/lib/storage";
 
-export function useBudget() {
-  const [budget, setBudget] = useState<BudgetConfig>({ totalBudget: 3000 });
+export function useBudget(initialBudget: BudgetConfig) {
+  const [budget, setBudget] = useState<BudgetConfig>(initialBudget);
 
-  useEffect(() => {
-    setBudget(storage.getBudgetConfig());
-  }, []);
-
-  const updateBudget = useCallback((totalBudget: number) => {
-    const config = { totalBudget };
-    storage.setBudgetConfig(config);
-    setBudget(config);
+  const updateBudget = useCallback(async (totalBudget: number) => {
+    const response = await fetch("/api/budget", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ totalBudget }),
+    });
+    if (!response.ok) throw new Error("Failed to update budget");
+    const data = (await response.json()) as { budget: BudgetConfig };
+    setBudget(data.budget);
   }, []);
 
   return { budget, updateBudget };

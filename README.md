@@ -25,10 +25,25 @@ Next.js 16 &middot; TypeScript &middot; Tailwind CSS &middot; shadcn/ui &middot;
 
 ```bash
 pnpm install
+cp .env.example .env
+pnpm db:push
 pnpm dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
+
+## Database Setup (Postgres + Prisma)
+
+This app now persists data in Postgres.
+
+1. Create a Postgres database (Neon is simplest for Vercel).
+2. Set `DATABASE_URL` in `.env` locally.
+3. Run `pnpm db:push`.
+
+For Vercel:
+
+1. Add `DATABASE_URL` in Project Settings → Environment Variables.
+2. Redeploy.
 
 ## License
 

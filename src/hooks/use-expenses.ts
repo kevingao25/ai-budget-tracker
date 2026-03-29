@@ -1,38 +1,48 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import type { Expense, Category } from "@/lib/types";
-import * as storage from "@/lib/storage";
 
-export function useExpenses() {
-  const [expenses, setExpenses] = useState<Expense[]>([]);
-
-  useEffect(() => {
-    setExpenses(storage.getExpenses());
-  }, []);
+export function useExpenses(initialExpenses: Expense[]) {
+  const [expenses, setExpenses] = useState<Expense[]>(initialExpenses);
 
   const addExpense = useCallback(
-    (expense: Omit<Expense, "id" | "createdAt">) => {
-      const newExpense = storage.addExpense(expense);
-      setExpenses(storage.getExpenses());
-      return newExpense;
+    async (expense: Omit<Expense, "id" | "createdAt">) => {
+      const response = await fetch("/api/expenses", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(expense),
+      });
+      if (!response.ok) throw new Error("Failed to create expense");
+      const data = (await response.json()) as { expense: Expense };
+      setExpenses((prev) => [data.expense, ...prev]);
+      return data.expense;
     },
     []
   );
 
   const updateExpense = useCallback(
-    (id: string, updates: Partial<Omit<Expense, "id" | "createdAt">>) => {
-      const updated = storage.updateExpense(id, updates);
-      if (updated) setExpenses(storage.getExpenses());
-      return updated;
+    async (id: string, updates: Partial<Omit<Expense, "id" | "createdAt">>) => {
+      const response = await fetch(`/api/expenses/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updates),
+      });
+      if (!response.ok) throw new Error("Failed to update expense");
+      const data = (await response.json()) as { expense: Expense };
+      setExpenses((prev) =>
+        prev.map((expense) => (expense.id === id ? data.expense : expense))
+      );
+      return data.expense;
     },
     []
   );
 
-  const deleteExpense = useCallback((id: string) => {
-    const deleted = storage.deleteExpense(id);
-    if (deleted) setExpenses(storage.getExpenses());
-    return deleted;
+  const deleteExpense = useCallback(async (id: string) => {
+    const response = await fetch(`/api/expenses/${id}`, { method: "DELETE" });
+    if (!response.ok) throw new Error("Failed to delete expense");
+    setExpenses((prev) => prev.filter((expense) => expense.id !== id));
+    return true;
   }, []);
 
   const totalSpent = expenses.reduce((sum, e) => sum + e.amount, 0);
