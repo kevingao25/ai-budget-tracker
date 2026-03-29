@@ -182,9 +182,9 @@ export function SubscriptionsSheet({
                 {subscriptions.map((s) => (
                   <div
                     key={s.id}
-                    className="flex items-center justify-between py-3 group"
+                    className="flex items-center justify-between py-3 gap-2 group"
                   >
-                    <div className="flex items-center gap-3 min-w-0">
+                    <div className="flex items-center gap-2 sm:gap-3 min-w-0">
                       <Switch
                         checked={s.active}
                         onCheckedChange={(checked) => {
@@ -193,7 +193,7 @@ export function SubscriptionsSheet({
                         aria-label={s.active ? "Pause" : "Resume"}
                       />
                       <div className="min-w-0">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1.5 sm:gap-2">
                           <span className={`text-sm font-medium truncate ${!s.active ? "text-muted-foreground line-through" : ""}`}>
                             {s.name}
                           </span>
@@ -205,35 +205,30 @@ export function SubscriptionsSheet({
                           </Badge>
                         </div>
                         <p className="text-xs text-muted-foreground mt-0.5">
-                          Renews {formatRenewalDate(s.nextRenewalDate)}
+                          Renews {formatRenewalDate(s.nextRenewalDate)} · <span className="font-number font-medium text-foreground">${s.amount.toFixed(2)}</span>
                         </p>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium font-number">
-                        ${s.amount.toFixed(2)}
-                      </span>
-                      <div className="flex gap-0.5 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-7 w-7 p-0 cursor-pointer"
-                          onClick={() => openEditForm(s)}
-                          aria-label="Edit"
-                        >
-                          <Pencil size={14} />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-7 w-7 p-0 text-destructive cursor-pointer"
-                          onClick={() => { void onDelete(s.id); }}
-                          aria-label="Delete"
-                        >
-                          <Trash2 size={14} />
-                        </Button>
-                      </div>
+                    <div className="flex items-center gap-0.5 shrink-0 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 w-7 p-0 cursor-pointer"
+                        onClick={() => openEditForm(s)}
+                        aria-label="Edit"
+                      >
+                        <Pencil size={14} />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 w-7 p-0 text-destructive cursor-pointer"
+                        onClick={() => { void onDelete(s.id); }}
+                        aria-label="Delete"
+                      >
+                        <Trash2 size={14} />
+                      </Button>
                     </div>
                   </div>
                 ))}
