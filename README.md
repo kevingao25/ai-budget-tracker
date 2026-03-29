@@ -1,25 +1,26 @@
-# AI Learning Budget
+# Drift
 
-A personal dashboard to track a one-time exploration fund for AI tools, APIs, and courses. Built to **encourage** spending on AI learning, not restrict it.
+Personal AI expense tracker for waving the curve.
 
-![AI Learning Budget Tracker](docs/screenshot.png)
+![Drift](docs/screenshot.png)
 
 ## Why
 
-I set aside $3,000 to invest in learning AI — subscriptions, API credits, courses, newsletters. This app tracks where that money goes and how much is left, so I can be intentional about exploring without overthinking every purchase.
+I set aside $3,000 to invest in learning AI — subscriptions, API credits, courses, newsletters. Drift tracks where that money goes and how much is left, so I can be intentional about exploring without overthinking every purchase.
 
 ## Features
 
 - Budget overview with remaining/invested amounts
 - Category breakdown (Subscriptions, API/Tokens, Learning)
 - Full expense log with filter, edit, and delete
+- Recurring subscriptions with renewal reminders
 - Configurable budget amount
 - Light/dark theme toggle
 - Postgres persistence (Prisma + Neon)
 
 ## Stack
 
-Next.js 16 &middot; TypeScript &middot; Tailwind CSS &middot; shadcn/ui &middot; Recharts &middot; Framer Motion &middot; Prisma &middot; Postgres
+Next.js 16 &middot; TypeScript &middot; Tailwind CSS &middot; shadcn/ui &middot; Framer Motion &middot; Prisma &middot; Postgres
 
 ## Getting Started
 
@@ -32,18 +33,13 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-## Database Setup (Postgres + Prisma)
+## Database Setup
 
-This app now persists data in Postgres.
-
-1. Create a Postgres database (Neon is simplest for Vercel).
+1. Create a Postgres database (Neon recommended for Vercel).
 2. Set `DATABASE_URL` in `.env` locally.
 3. Run `pnpm db:push`.
 
-For Vercel:
-
-1. Add `DATABASE_URL` in Project Settings → Environment Variables.
-2. Redeploy.
+For Vercel: add `DATABASE_URL` in Project Settings → Environment Variables, then redeploy.
 
 ## License
 
