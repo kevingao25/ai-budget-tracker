@@ -33,8 +33,38 @@ export function CategoryBreakdown({
         Where You&apos;re Investing
       </h3>
 
-      {/* Proportional bar */}
-      <div className="flex gap-1 rounded-lg overflow-hidden h-9 mb-4">
+      {/* Stacked bars (mobile) */}
+      <div className="sm:hidden space-y-2.5">
+        {CATEGORIES.map((cat) => {
+          const amount = spentByCategory[cat] || 0;
+          if (amount === 0) return null;
+          const pct = (amount / totalSpent) * 100;
+          return (
+            <div key={cat}>
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-sm text-muted-foreground">
+                  {CATEGORY_LABELS[cat]}
+                </span>
+                <span className="text-sm font-number font-medium">
+                  ${amount.toFixed(0)}
+                </span>
+              </div>
+              <div className="h-2 rounded-full bg-muted overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all duration-500"
+                  style={{
+                    width: `${pct}%`,
+                    backgroundColor: CATEGORY_COLORS[cat],
+                  }}
+                />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Proportional bar (desktop) */}
+      <div className="hidden sm:flex gap-1 rounded-lg overflow-hidden h-9 mb-4">
         {CATEGORIES.map((cat) => {
           const amount = spentByCategory[cat] || 0;
           if (amount === 0) return null;
@@ -54,8 +84,8 @@ export function CategoryBreakdown({
         })}
       </div>
 
-      {/* Legend */}
-      <div className="flex flex-wrap gap-x-6 gap-y-2">
+      {/* Legend (desktop) */}
+      <div className="hidden sm:flex flex-wrap gap-x-6 gap-y-2">
         {CATEGORIES.map((cat) => {
           const amount = spentByCategory[cat] || 0;
           if (amount === 0) return null;
