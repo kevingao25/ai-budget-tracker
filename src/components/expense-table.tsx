@@ -3,6 +3,16 @@
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Pencil, Trash2 } from "lucide-react";
 import type { Expense, Category } from "@/lib/types";
 import { CATEGORY_LABELS, CATEGORY_COLORS } from "@/lib/types";
@@ -26,6 +36,7 @@ export function ExpenseTable({
   onDelete,
 }: ExpenseTableProps) {
   const [filter, setFilter] = useState<Category | "all">("all");
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const filtered =
     filter === "all"
@@ -121,7 +132,7 @@ export function ExpenseTable({
                     variant="ghost"
                     size="sm"
                     className="h-7 w-7 p-0 text-destructive cursor-pointer"
-                    onClick={() => void onDelete(expense.id)}
+                    onClick={() => setDeletingId(expense.id)}
                   >
                     <Trash2 size={14} />
                   </Button>
@@ -131,6 +142,29 @@ export function ExpenseTable({
           ))}
         </div>
       )}
+
+      <AlertDialog open={!!deletingId} onOpenChange={(open) => { if (!open) setDeletingId(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete expense?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This can&apos;t be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-white hover:bg-destructive/90"
+              onClick={() => {
+                if (deletingId) void onDelete(deletingId);
+                setDeletingId(null);
+              }}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
