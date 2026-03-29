@@ -149,7 +149,7 @@ html {
 }
 
 [data-slot="progress-indicator"] {
-  background: linear-gradient(90deg, var(--teal), var(--coral));
+  background: linear-gradient(90deg, var(--coral), var(--primary));
   border-radius: inherit;
 }
 

@@ -37,7 +37,7 @@ export function BudgetOverview({
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-widest mb-1">
             Remaining
           </p>
-          <p className="text-3xl sm:text-5xl font-bold tracking-tight font-number text-teal">
+          <p className="text-3xl sm:text-5xl font-bold tracking-tight font-number">
             ${remaining.toLocaleString("en-US", { minimumFractionDigits: 2 })}
           </p>
         </div>

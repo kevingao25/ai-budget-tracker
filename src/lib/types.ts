@@ -21,9 +21,9 @@ export const CATEGORY_LABELS: Record<Category, string> = {
 };
 
 export const CATEGORY_COLORS: Record<Category, string> = {
-  subscriptions: "#5b8fd9",
-  api: "#2a9d8f",
-  learning: "#e9c46a",
+  subscriptions: "#c96442",
+  api: "#4a7fc1",
+  learning: "#c9a84c",
 };
 
 export type BillingCycle = "monthly" | "yearly";

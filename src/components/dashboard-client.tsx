@@ -84,11 +84,14 @@ export function DashboardClient({
           className="space-y-8 sm:space-y-10"
         >
           <motion.header variants={fadeUp} className="flex justify-between items-start">
-            <div>
-              <h1 className="text-xl font-semibold tracking-tight">AI Learning Budget</h1>
-              <p className="text-sm text-muted-foreground mt-0.5">
-                Your exploration fund for staying ahead.
-              </p>
+            <div className="flex items-center gap-3">
+              <img src="/icon.svg" alt="" className="w-9 h-9 opacity-90" />
+              <div>
+                <h1 className="text-2xl font-bold tracking-tight text-coral">Drift</h1>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Personal AI expense tracker for waving the curve
+                </p>
+              </div>
             </div>
             <div className="flex items-center gap-2">
               <ThemeToggle />

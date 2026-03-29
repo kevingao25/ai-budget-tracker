@@ -14,8 +14,8 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AI Learning Budget",
-  description: "Track your AI exploration fund",
+  title: "Drift · AI Budget",
+  description: "Personal AI expense tracker for waving the curve",
 };
 
 export default function RootLayout({

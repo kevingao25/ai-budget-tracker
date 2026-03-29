@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Three organic, offset waves — like thoughts rippling outward -->
+  <!-- Back wave (lightest) -->
+  <path d="M4 38 C10 28, 18 42, 26 30 C34 18, 42 36, 52 22 C56 16, 60 18, 62 16"
+        stroke="#D97757" stroke-width="3.5" stroke-linecap="round" fill="none" opacity="0.25"/>
+  <!-- Mid wave -->
+  <path d="M2 44 C10 32, 20 48, 30 36 C40 24, 48 42, 58 28 C60 25, 62 26, 64 24"
+        stroke="#D97757" stroke-width="4" stroke-linecap="round" fill="none" opacity="0.55"/>
+  <!-- Front wave (boldest) -->
+  <path d="M0 50 C10 36, 22 54, 34 42 C44 30, 52 48, 62 34"
+        stroke="#D97757" stroke-width="5" stroke-linecap="round" fill="none" opacity="1"/>
+</svg>
