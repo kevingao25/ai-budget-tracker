@@ -83,17 +83,13 @@ export function DashboardClient({
           animate="visible"
           className="space-y-8 sm:space-y-10"
         >
-          <motion.header variants={fadeUp} className="flex justify-between items-start">
-            <div className="flex items-center gap-3">
-              <img src="/icon.svg" alt="" className="w-9 h-9 opacity-90" />
-              <div>
+          <motion.header variants={fadeUp} className="space-y-2">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <img src="/icon.svg" alt="" className="hidden sm:block w-9 h-9 opacity-90" />
                 <h1 className="text-2xl font-bold tracking-tight text-coral">Drift</h1>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  Personal AI expense tracker for waving the curve
-                </p>
               </div>
-            </div>
-            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2">
               <ThemeToggle />
               <Button
                 size="sm"
@@ -111,6 +107,10 @@ export function DashboardClient({
                 + Log Expense
               </Button>
             </div>
+            </div>
+            <p className="hidden sm:block text-xs text-muted-foreground pl-1">
+              Personal AI expense tracker for waving the curve
+            </p>
           </motion.header>
 
           <motion.div variants={fadeUp}>
